@@ -1,13 +1,13 @@
 import express from 'express';
-import { handlePrompt, handlePromptTurbo } from '../controllers/index.js';
+import { handlePromptUnified } from '../controllers/index.js';
 
 const router = express.Router();
 
 /**
  * @swagger
- * /prompts/prompt-4.0:
+ * /prompts/unified:
  *   post:
- *     summary: Genera código con GPT-4
+ *     summary: Genera código con GPT-4o-mini o GPT-3.5 Turbo
  *     tags: [Prompts]
  *     requestBody:
  *       required: true
@@ -17,10 +17,15 @@ const router = express.Router();
  *             type: object
  *             required:
  *               - prompt
+ *               - model
  *             properties:
  *               prompt:
  *                 type: string
- *                 example: "Crea una función que convierta Celsius a Fahrenheit"
+ *                 example: "Escribe una función en Python para sumar dos números"
+ *               model:
+ *                 type: string
+ *                 enum: ["gpt-4o-mini", "gpt-3.5-turbo"]
+ *                 example: "gpt-4o-mini"
  *     responses:
  *       200:
  *         description: Respuesta generada exitosamente
@@ -32,37 +37,6 @@ const router = express.Router();
  *                 result:
  *                   type: string
  */
-router.post("/prompt-4.0", handlePrompt);
-
-/**
- * @swagger
- * /prompts/prompt-3.5-turbo:
- *   post:
- *     summary: Genera código con GPT-3.5 Turbo
- *     tags: [Prompts]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - prompt
- *             properties:
- *               prompt:
- *                 type: string
- *                 example: "Genera una clase en Java para manejar usuarios"
- *     responses:
- *       200:
- *         description: Respuesta generada exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 result:
- *                   type: string
- */
-router.post("/prompt-3.5-turbo", handlePromptTurbo);
+router.post("/unified", handlePromptUnified);
 
 export default router;
