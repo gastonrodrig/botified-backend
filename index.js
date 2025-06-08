@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './src/config/index.js';
+import promptRoutes from './src/routes/prompt-routes.js';
 
 // Cargar variables de entorno
 dotenv.config();
@@ -13,6 +14,9 @@ const app = express();
 // Middlewares
 app.use(cors());
 app.use(express.json());
+
+// Rutas
+app.use("/api/prompts", promptRoutes);
 
 // Documentación Swagger
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
