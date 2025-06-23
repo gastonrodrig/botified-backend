@@ -26,7 +26,7 @@ jobs:
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v1
         with:
-          service: botificados-backend
+          service: botified-backend
           region: us-central1
           source: .
           env_vars: |
