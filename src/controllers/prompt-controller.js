@@ -4,17 +4,9 @@ import { handleNotFoundError } from '../utils/index.js';
 const promptTemplate = (userPrompt) => `
 ${userPrompt}
 
-Devuelve exclusivamente un único objeto JSON, sin ningún comentario ni texto adicional.
+Devuelve exclusivamente un único objeto JSON, sin ningún comentario ni texto adicional fuera del objeto.
 
-Si tu respuesta es un único archivo, usa esta estructura:
-
-{
-  "language": "[nombre del lenguaje en minúsculas]",
-  "filename": "[ruta del archivo]",
-  "content": "[código]"
-}
-
-Si tu respuesta contiene múltiples archivos, usa esta estructura:
+Si tu respuesta contiene archivos de código, usa esta estructura:
 
 {
   "files": [
@@ -22,16 +14,26 @@ Si tu respuesta contiene múltiples archivos, usa esta estructura:
       "language": "[nombre del lenguaje en minúsculas]",
       "filename": "[ruta del archivo]",
       "content": "[código]"
-    },
-    {
-      "language": "[nombre del lenguaje en minúsculas]",
-      "filename": "[ruta del archivo]",
-      "content": "[código]"
     }
+  ],
+  "comments": [
+    "Comentario o explicación opcional sobre el código."
   ]
 }
 
-Si no puedes generar el código, devuelve {}.
+Si tu respuesta NO contiene código, devuelve solo los comentarios así:
+
+{
+  "comments": [
+    "Tu respuesta o explicación aquí."
+  ]
+}
+
+Si no puedes responder, devuelve:
+
+{
+  "comments": ["Lo siento, no puedo ayudarte con esto."]
+}
 `;
 
 export const handlePromptUnified = async (req, res) => {
@@ -71,16 +73,21 @@ export const handlePromptUnified = async (req, res) => {
       });
     }
 
-    let files;
+    // Normalizar estructura de archivos
+    let files = [];
     if (parsed.files && Array.isArray(parsed.files)) {
       files = parsed.files;
     } else if (parsed.language && parsed.filename && parsed.content) {
       files = [parsed];
-    } else {
-      files = [];
     }
 
-    res.status(200).json({ files });
+    // Normalizar estructura de comentarios
+    const comments = parsed.comments || [];
+
+    res.status(200).json({
+      files,
+      comments
+    });
 
   } catch (error) {
     console.error(`Error al procesar el prompt con ${model}:`, error);
